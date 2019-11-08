@@ -138,7 +138,13 @@ class CloneMixin(six.with_metaclass(CloneMetaClass)):
 
         # Clone one to many/many to one fields
         for field in many_to_one_or_one_to_many_fields:
-            getattr(duplicate, field.related_name).set(getattr(self, field.related_name).all())
+            for rel_object in getattr(self, field.related_name).all():
+                if hasattr(rel_object, 'make_clone'):
+                    rel_object.make_clone(attrs={field.remote_field.name: duplicate}, sub_clone=False)
+                else:
+                    rel_object.pk = None
+                    setattr(rel_object, field.remote_field.name, duplicate)
+                    rel_object.save()
 
         # Clone many to many fields
         for field in many_to_many_fields:
