@@ -73,7 +73,7 @@ class CloneMixin(six.with_metaclass(CloneMetaClass)):
                 if f.attname in unique_fields and isinstance(f, models.CharField):
                     count = (
                         instance.__class__._default_manager
-                        .filter(**{'{}__startswith'.format(f.attname): value})
+                        .filter(**{'{}__istartswith'.format(f.attname): value})
                         .count()
                     )
                     if cls.USE_UNIQUE_DUPLICATE_SUFFIX is True:
